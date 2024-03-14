@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="offboard"  type="vins_to_mavros_node" name="vins_to_mavros" output="screen">
+        <remap from="~vision_pose" to="/mavros/vision_pose/pose" />
+        <remap from="~odom" to="/Tracker2/pose" />
+    </node>
+
+    <!-- <node pkg="offboard"  type="figure_8_circle_node" name="figure_8_circle" output="screen"> -->
+    <!-- </node> -->
+
+</launch>

@@ -14,11 +14,12 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg){
 
 int main(int argc, char **argv)
 {
+    // std::cout<<"haha3"<<std::endl;
     ros::init(argc, argv, "offboard_test_node");
     ros::NodeHandle nh;
 
     ros::Subscriber state_sub = nh.subscribe<mavros_msgs::State>
-            ("mavros/state", 10, state_cb);
+            ("mavros/state", 1, state_cb);
     ros::Publisher local_pos_pub = nh.advertise<geometry_msgs::PoseStamped>
             ("mavros/setpoint_position/local", 10);
     ros::ServiceClient arming_client = nh.serviceClient<mavros_msgs::CommandBool>
@@ -32,17 +33,18 @@ int main(int argc, char **argv)
     // wait for FCU connection
     while(ros::ok() && !current_state.connected){
         ros::spinOnce();
+        // std::cout<<"haha2"<<std::endl;
         rate.sleep();
     }
 
     geometry_msgs::PoseStamped pose;
     pose.pose.position.x = 0;
     pose.pose.position.y = 0;
-    pose.pose.position.z = 2;
+    pose.pose.position.z = 1;
 
     // send a few setpoints before starting
-      // 在切换到offboard模式之前，你必须先发送一些期望点信息到飞控中。 不然飞控会拒绝切换到offboard模式。
-    for(int i = 100; ros::ok() && i > 0; --i){
+    // 在切换到offboard模式之前，你必须先发送一些期望点信息到飞控中。 不然飞控会拒绝切换到offboard模式。
+    for(int i = 2; ros::ok() && i > 0; --i){
         local_pos_pub.publish(pose);
         ros::spinOnce();
         rate.sleep();
@@ -57,8 +59,10 @@ int main(int argc, char **argv)
     ros::Time last_request = ros::Time::now();
 
     while(ros::ok()){
-        if( current_state.mode != "OFFBOARD" &&
-            (ros::Time::now() - last_request > ros::Duration(5.0))){
+        // std::cout<<"haha"<<std::endl;
+        if( current_state.mode != "OFFBOARD" && 
+            (ros::Time::now() - last_request > ros::Duration(0))){
+        // std::cout<<"haha1"<<std::endl;
             if( set_mode_client.call(offb_set_mode) &&
                 offb_set_mode.response.mode_sent){
                 ROS_INFO("Offboard enabled");
@@ -66,7 +70,7 @@ int main(int argc, char **argv)
             last_request = ros::Time::now();
         } else {
             if( !current_state.armed &&
-                (ros::Time::now() - last_request > ros::Duration(5.0))){
+                (ros::Time::now() - last_request > ros::Duration(0))){
                 if( arming_client.call(arm_cmd) &&
                     arm_cmd.response.success){
                     ROS_INFO("Vehicle armed");

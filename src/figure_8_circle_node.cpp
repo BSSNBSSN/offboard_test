@@ -10,7 +10,7 @@
 
 #define FLIGHT_ALTITUDE 1.0f
 #define RATE            100  // 频率 hz
-#define RADIUS          3   // 绕八运动的半径大小 m
+#define RADIUS          1   // 绕八运动的半径大小 m
 #define CYCLE_S         10  // 完成一次绕八运动所花费的时间
 #define STEPS           (CYCLE_S*RATE)
 
@@ -57,7 +57,7 @@ void init_path()
         // path[i].acceleration_or_force.y = dadt*dadt*r*((44.0*c2a) + c4a - 21.0)/(c2am3*c2am3*c2am3);
         // path[i].acceleration_or_force.z = 0.0;
 
-        path[i].yaw = atan2(-path[i].velocity.x,path[i].velocity.y) + (PI/2.0f);
+        // path[i].yaw = atan2(-path[i].velocity.x,path[i].velocity.y) + (PI/2.0f);
 
         printf("x:%7.3f y:%7.3f yaw:%7.1f\n",path[i].position.x,path[i].position.y,path[i].yaw*180.0f/PI);
 
@@ -150,6 +150,9 @@ HOME:
         ros::spinOnce();
         rate.sleep();
         if(current_state.mode == "OFFBOARD" && current_state.armed) break;
+        else {
+            std::cout << current_state.mode << ' ' << current_state.armed << std::endl;
+        }
     }
 
     i = RATE * 5;

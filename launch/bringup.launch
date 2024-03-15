@@ -1,10 +1,17 @@
 <launch>
     <node pkg="offboard"  type="vins_to_mavros_node" name="vins_to_mavros" output="screen">
         <remap from="~vision_pose" to="/mavros/vision_pose/pose" />
-        <remap from="~odom" to="/Tracker2/pose" />
+        <remap from="~odom" to="/vrpn_client_node/Tracker2/pose" />
     </node>
+    
+    <!-- <node pkg="offboard"  type="offboard_test_node" name="offboard_test" output="screen"> -->
+    <!-- </node> -->
 
     <!-- <node pkg="offboard"  type="figure_8_circle_node" name="figure_8_circle" output="screen"> -->
     <!-- </node> -->
+
+    <!--
+        roslaunch vrpn_client_ros sample.launch server:=192.168.3.4
+    -->
 
 </launch>

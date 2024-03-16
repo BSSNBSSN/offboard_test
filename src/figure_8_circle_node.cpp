@@ -7,6 +7,8 @@
 #include <mavros_msgs/PositionTarget.h>
 
 #include <math.h>
+#include <fstream>
+#include <cstdlib> // 用于获取环境变量
 
 #define FLIGHT_ALTITUDE 1.0f
 #define RATE            100  // 频率 hz
@@ -68,6 +70,24 @@ void init_path()
         if((next-curr) < -PI) next+=(2.0*PI);
         if((next-curr) > PI) next-=(2.0*PI);
         path[i].yaw_rate = (next-curr)/dt;
+    }
+
+    // 获取 HOME 环境变量
+    const char* home_path = std::getenv("HOME");
+    if (home_path == NULL) {
+        ROS_ERROR("Failed to get HOME environment variable");
+        return;
+    }
+    // 将数据写入CSV文件
+    std::ofstream file(std::string(home_path) + "/standard8.csv");
+    if (file.is_open()) {
+        for (size_t i = 0; i < STEPS; ++i) {
+            file << path[i].position.x << "," << path[i].position.y << "," << path[i].position.z << "\n";
+        }
+        file.close();
+        ROS_INFO("Data has been written to %s/standard8.csv", home_path);
+    } else {
+        ROS_ERROR("Unable to open position_data.csv");
     }
 }
 

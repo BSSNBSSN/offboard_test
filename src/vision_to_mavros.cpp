@@ -19,10 +19,12 @@ void vins_callback(const boost::shared_ptr<const geometry_msgs::PoseStamped>& ms
         odomBias.pose.position.y = vision.pose.position.y;
         odomBias.pose.position.z = vision.pose.position.z;
         initFlag = true;
-        std::cout << "Odom Bias Initialized" << std::endl;
-        std::cout << odomBias.pose.position.x <<' ' 
-                  << odomBias.pose.position.y <<' ' 
-                  << odomBias.pose.position.z << std::endl;
+        ROS_WARN("Odom Bias Initialized, init position:");
+        // Caution! Converting from millimeters to meters here!!
+        ROS_WARN("x: %f, y: %f, z: %f",
+                 odomBias.pose.position.x / 1000,
+                 odomBias.pose.position.y / 1000,
+                 odomBias.pose.position.z / 1000);
     }
     vision.pose.position.x -= odomBias.pose.position.x;
     vision.pose.position.y -= odomBias.pose.position.y;

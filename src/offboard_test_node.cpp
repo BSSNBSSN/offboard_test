@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     geometry_msgs::PoseStamped pose;
     pose.pose.position.x = 0;
     pose.pose.position.y = 0;
-    pose.pose.position.z = 1.5;
+    pose.pose.position.z = 1;
 
     // send a few setpoints before starting
     // 在切换到offboard模式之前，你必须先发送一些期望点信息到飞控中。 不然飞控会拒绝切换到offboard模式。

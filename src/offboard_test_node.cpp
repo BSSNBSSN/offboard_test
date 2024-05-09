@@ -14,7 +14,6 @@ void state_cb(const mavros_msgs::State::ConstPtr& msg){
 
 int main(int argc, char **argv)
 {
-    // std::cout<<"haha3"<<std::endl;
     ros::init(argc, argv, "offboard_test_node");
     ros::NodeHandle nh;
 
@@ -33,7 +32,6 @@ int main(int argc, char **argv)
     // wait for FCU connection
     while(ros::ok() && !current_state.connected){
         ros::spinOnce();
-        // std::cout<<"haha2"<<std::endl;
         rate.sleep();
     }
 
@@ -59,10 +57,8 @@ int main(int argc, char **argv)
     ros::Time last_request = ros::Time::now();
 
     while(ros::ok()){
-        // std::cout<<"haha"<<std::endl;
         if( current_state.mode != "OFFBOARD" && 
             (ros::Time::now() - last_request > ros::Duration(0))){
-        // std::cout<<"haha1"<<std::endl;
             if( set_mode_client.call(offb_set_mode) &&
                 offb_set_mode.response.mode_sent){
                 ROS_INFO("Offboard enabled");

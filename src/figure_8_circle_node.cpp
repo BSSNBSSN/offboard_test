@@ -1,3 +1,10 @@
+
+// source offboard/devel/setup.bash 
+// rosrun offboard figure_8_circle_node 
+// make px4_sitl gazebo
+// roslaunch mavros px4.launch fcu_url:="udp://:14540@127.0.0.1:14557"
+
+
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <mavros_msgs/CommandBool.h>
@@ -9,10 +16,12 @@
 #include <math.h>
 #include <fstream>
 #include <cstdlib> // 用于获取环境变量
+#include <thread>
+#include <chrono>
 
 #define FLIGHT_ALTITUDE 1.0f
 #define RATE            100  // 频率 hz
-#define RADIUS          1   // 绕八运动的半径大小 m
+#define RADIUS          3   // 绕八运动的半径大小 m
 #define CYCLE_S         10  // 完成一次绕八运动所花费的时间
 #define STEPS           (CYCLE_S*RATE)
 
@@ -55,9 +64,9 @@ void init_path()
         path[i].velocity.y = dadt*r*( ss*ss + ss + ssmo*cc) /sspos;
         path[i].velocity.z = 0;
 
-        // path[i].acceleration_or_force.x = -dadt*dadt*8.0*r*s*c*((3.0*c2a) + 7.0)/(c2am3*c2am3*c2am3);
-        // path[i].acceleration_or_force.y = dadt*dadt*r*((44.0*c2a) + c4a - 21.0)/(c2am3*c2am3*c2am3);
-        // path[i].acceleration_or_force.z = 0.0;
+        path[i].acceleration_or_force.x = -dadt*dadt*8.0*r*s*c*((3.0*c2a) + 7.0)/(c2am3*c2am3*c2am3);
+        path[i].acceleration_or_force.y = dadt*dadt*r*((44.0*c2a) + c4a - 21.0)/(c2am3*c2am3*c2am3);
+        path[i].acceleration_or_force.z = 0.0;
 
         // path[i].yaw = atan2(-path[i].velocity.x,path[i].velocity.y) + (PI/2.0f);
 
@@ -195,7 +204,12 @@ HOME:
         }
         target_local_pub.publish(path[i]);
         i++;
-        if(i>=STEPS) i=0;
+        // if(i==STEPS / 2) {
+        //     std::this_thread::sleep_for(std::chrono::seconds(1));
+        // }
+        if(i>=STEPS) {
+            i=0;
+        }
         ros::spinOnce();
         rate.sleep();
     }
